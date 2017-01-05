@@ -1,0 +1,6 @@
+.DS_Store
+logs
+node_modules/**
+tmp/**
+**/npm-debug.log
+generated/**

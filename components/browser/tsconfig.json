@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "outDir": "../../generated/browser",
+    "types" : ["systemjs"]
+  },
+  "files": [
+    "config/ts/app.component.ts",
+    "config/ts/app.module.ts",
+    "config/ts/main.ts",
+    "config/ts/systemjs.config.ts",
+    "config/ts/config.service.ts"
+  ]
+}
