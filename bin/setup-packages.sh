@@ -21,6 +21,6 @@ cp components/local-typings/config.service.d.ts ${PACKAGE}
 
 SUBDIR=browser/config/ts
 mkdir -p ${PACKAGE}/${SUBDIR}
-cp generated/browser/config.service.js ${PACKAGE}/${SUBDIR}
+cp generated/browser/config.service.* ${PACKAGE}/${SUBDIR}
 
 

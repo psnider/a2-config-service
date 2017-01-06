@@ -15,11 +15,10 @@ var DEFAULT_CONFIG;
 var CONFIGURATIONS = {};
 var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS = {};
 function loadConfigService() {
-    CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
+    let filename = CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
         let succeeded;
         try {
-            fs.readFileSync(filename);
-            let contents = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString();
+            let contents = fs.readFileSync(filename).toString();
             let parts = contents.split(CONFIG_SERVICE_JS_DATA_MARKER);
             config_service_js.start = parts[0];
             config_service_js.end = parts[1];
@@ -29,6 +28,9 @@ function loadConfigService() {
         }
         return succeeded;
     });
+    if (!filename) {
+        throw new Error(`couldn't find config.service.js`);
+    }
 }
 // The first configuration added is assumed to be the default, unless is_default is false.
 // If is_default is true for a subsequent configuration, then that configuration becomes the new default.

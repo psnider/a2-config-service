@@ -21,11 +21,10 @@ var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS: {[config_name: string]: string} = {}
 
 
 function loadConfigService() {
-    CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
+    let filename = CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
         let succeeded
         try {
-            fs.readFileSync(filename)
-            let contents: string = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString()
+            let contents: string = fs.readFileSync(filename).toString()
             let parts = contents.split(CONFIG_SERVICE_JS_DATA_MARKER)
             config_service_js.start = parts[0]
             config_service_js.end   = parts[1]
@@ -35,6 +34,9 @@ function loadConfigService() {
         }
         return succeeded
     })
+    if (!filename) {
+        throw new Error(`couldn't find config.service.js`)
+    }
 }
 
 
