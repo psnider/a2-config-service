@@ -7,9 +7,10 @@ import HTTP_STATUS_CODES = require('http-status-codes')
 
 import {get as getConfig} from '@sabbatical/configure-local'
 
-import {addConfiguration, handleRestRequest as handleBrowserConfigRestRequest, handleConfigServiceJS} from './browser-config-service'
+import {addConfiguration as addBrowserConfiguration, handleRestRequest as handleBrowserConfigRestRequest, handleConfigServiceJS} from './browser-config-service'
 import {common} from '../../../../config/browser-common'
-import {development} from '../../../../config/browser-development'
+import {alpha} from '../../../../config/browser-alpha'
+import {beta} from '../../../../config/browser-beta'
 
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
@@ -59,7 +60,9 @@ function handle_node_modules(req: express.Request, res: express.Response) {
 
 
 function init() {
-    addConfiguration('beta', common, development)
+    // The first configuration is the default, unless the is_default parameter is set
+    addBrowserConfiguration('beta', common, beta)
+    addBrowserConfiguration('alpha', common, alpha)
 
     var app = express()
     app.get('/', function (req: ExpressRequest, res: ExpressResponse, next: NextFunction) {

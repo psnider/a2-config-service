@@ -1,6 +1,6 @@
 {
   "name": "@sabbatical/a2-config-service",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A configuration service for Angular2 apps",
   "scripts": {
     "clean": "rm -fr generated",

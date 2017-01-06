@@ -2,6 +2,10 @@
 const fs = require("fs");
 const deepExtend = require("deep-extend");
 const CONFIG_SERVICE_JS_FILENAME = 'browser/browser/config/ts/config.service.js';
+const CONFIG_SERVICE_JS_FILENAMES = [
+    CONFIG_SERVICE_JS_FILENAME,
+    `node_modules/@sabbatical/a2-config-service/${CONFIG_SERVICE_JS_FILENAME}`
+];
 const CONFIG_SERVICE_JS_DATA_MARKER = "'SET_BY_SERVER'";
 var config_service_js = {
     start: undefined,
@@ -11,15 +15,25 @@ var DEFAULT_CONFIG;
 var CONFIGURATIONS = {};
 var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS = {};
 function loadConfigService() {
-    let aaa = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString();
-    let parts = aaa.split(CONFIG_SERVICE_JS_DATA_MARKER);
-    config_service_js.start = parts[0];
-    config_service_js.end = parts[1];
+    CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
+        let succeeded;
+        try {
+            fs.readFileSync(filename);
+            let contents = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString();
+            let parts = contents.split(CONFIG_SERVICE_JS_DATA_MARKER);
+            config_service_js.start = parts[0];
+            config_service_js.end = parts[1];
+            succeeded = true;
+        }
+        catch (error) {
+        }
+        return succeeded;
+    });
 }
 // The first configuration added is assumed to be the default, unless is_default is false.
 // If is_default is true for a subsequent configuration, then that configuration becomes the new default.
 function addConfiguration(name, common, specific, is_default) {
-    if (!DEFAULT_CONFIG || !is_default) {
+    if (!DEFAULT_CONFIG || is_default) {
         DEFAULT_CONFIG = name;
     }
     CONFIGURATIONS[name] = deepExtend({}, common, specific);
@@ -38,13 +52,13 @@ function getConfigurationName(req) {
     }
     return DEFAULT_CONFIG;
 }
-// returns a custom
+// express handler that returns the configuration as JSON
 function handleRestRequest(req, res) {
     let name = getConfigurationName(req);
     res.send(CONFIGURATIONS[name]);
 }
 exports.handleRestRequest = handleRestRequest;
-// express handler for returning the javascript for "config.service.js""
+// express handler that returns the javascript for "config.service.js""
 function handleConfigServiceJS(req, res) {
     let name = getConfigurationName(req);
     res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name]);

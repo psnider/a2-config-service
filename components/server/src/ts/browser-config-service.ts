@@ -6,6 +6,10 @@ import HHTP_STATUS_CODES = require('http-status-codes')
 
 
 const CONFIG_SERVICE_JS_FILENAME = 'browser/browser/config/ts/config.service.js'
+const CONFIG_SERVICE_JS_FILENAMES = [
+    CONFIG_SERVICE_JS_FILENAME,
+    `node_modules/@sabbatical/a2-config-service/${CONFIG_SERVICE_JS_FILENAME}`
+]
 const CONFIG_SERVICE_JS_DATA_MARKER = "'SET_BY_SERVER'"
 var config_service_js: {start: string, end: string} = {
     start: undefined,
@@ -17,10 +21,20 @@ var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS: {[config_name: string]: string} = {}
 
 
 function loadConfigService() {
-    let aaa: string = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString()
-    let parts = aaa.split(CONFIG_SERVICE_JS_DATA_MARKER)
-    config_service_js.start = parts[0]
-    config_service_js.end   = parts[1]
+    CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
+        let succeeded
+        try {
+            fs.readFileSync(filename)
+            let contents: string = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString()
+            let parts = contents.split(CONFIG_SERVICE_JS_DATA_MARKER)
+            config_service_js.start = parts[0]
+            config_service_js.end   = parts[1]
+            succeeded = true
+        } catch (error) {
+            // no action requied
+        }
+        return succeeded
+    })
 }
 
 
@@ -28,7 +42,7 @@ function loadConfigService() {
 // The first configuration added is assumed to be the default, unless is_default is false.
 // If is_default is true for a subsequent configuration, then that configuration becomes the new default.
 export function addConfiguration(name: string, common: any, specific: any, is_default?: boolean): void {
-    if (!DEFAULT_CONFIG || !is_default) {
+    if (!DEFAULT_CONFIG || is_default) {
         DEFAULT_CONFIG = name
     }
     CONFIGURATIONS[name] = deepExtend({}, common, specific)
@@ -50,14 +64,14 @@ function getConfigurationName(req: ExpressRequest): string {
 }
 
 
-// returns a custom
+// express handler that returns the configuration as JSON
 export function handleRestRequest(req: ExpressRequest, res: ExpressResponse): void {
     let name = getConfigurationName(req)
     res.send(CONFIGURATIONS[name])
 }
 
 
-// express handler for returning the javascript for "config.service.js""
+// express handler that returns the javascript for "config.service.js""
 export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse): void {
     let name = getConfigurationName(req)
     res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name])
