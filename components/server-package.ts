@@ -1,1 +1,1 @@
-export {addConfiguration, handleRestRequest} from './server/src/ts/browser-config-service'
+export {addConfiguration, handleRestRequest, handleConfigServiceJS} from './server/src/ts/browser-config-service'
