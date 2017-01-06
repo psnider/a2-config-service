@@ -5,10 +5,9 @@ import {Request as ExpressRequest, Response as ExpressResponse, NextFunction} fr
 import {Express} from 'express-serve-static-core'
 import HTTP_STATUS_CODES = require('http-status-codes')
 
-import {addConfiguration, handleRestRequest as handleBrowserConfigRestRequest} from './browser-config-service'
-
 import {get as getConfig} from '@sabbatical/configure-local'
 
+import {addConfiguration, handleRestRequest as handleBrowserConfigRestRequest, handleConfigServiceJS} from './browser-config-service'
 import {common} from '../../../../config/browser-common'
 import {development} from '../../../../config/browser-development'
 
@@ -60,16 +59,17 @@ function handle_node_modules(req: express.Request, res: express.Response) {
 
 
 function init() {
-    addConfiguration('development', common, development)
+    addConfiguration('beta', common, development)
 
     var app = express()
     app.get('/', function (req: ExpressRequest, res: ExpressResponse, next: NextFunction) {
         res.sendFile(process.cwd() + '/generated/browser/browser/config/html/config.html')
     })
     app.get('/node_modules/*', handle_node_modules)
+    app.get('/configwebapp/config.service.js', handleConfigServiceJS)
     app.use('/configwebapp', express.static(process.cwd() + '/generated/browser'))
-    let jsonParser = body_parser.json()
-    app.get('/api/browser-config', jsonParser, handleBrowserConfigRestRequest)
+    app.get('/api/browser-config', handleBrowserConfigRestRequest)
+
     const api_port = getConfig('api_port')
     console.log(`listening on port=${api_port}`)
     app.listen(api_port)

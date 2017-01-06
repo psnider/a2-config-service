@@ -3,8 +3,12 @@ import {Request as ExpressRequest, Response as ExpressResponse, NextFunction} fr
 
 
 
-export function addConfiguration(name: string, common: any, specific: any): void
+export function addConfiguration(name: string, common: any, specific: any, is_default?: boolean): void
 
-// Always return the entire browser config
+// this is mostly for test
+// web applications must use handleConfigServiceJS
 export function handleRestRequest(req: ExpressRequest, res: ExpressResponse): void
+
+// the express handler that serves the javascript for "config.service.js"
+export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse): void
 

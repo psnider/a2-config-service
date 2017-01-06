@@ -1,6 +1,6 @@
 {
   "name": "@sabbatical/a2-config-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A configuration service for Angular2 apps",
   "scripts": {
     "clean": "rm -fr generated",
@@ -11,7 +11,7 @@
     "pre-push": "npm run clean && npm run build && npm run setup-browser && npm run build-packages && bin/setup-packages.sh",
     "build-server": "tsc -p components/server/src",
     "run-server": "DISABLE_LOGGING=false node generated/server/src/components/server/src/ts/browser-config-server.js",
-    "build-browser": "tsc -p components/browser && npm run setup-browser",
+    "build-browser": "tsc -p components/browser && npm run setup-browser && npm run setup-packages",
     "setup-browser": "bin/setup-browser.sh",
     "#": "echo no-op"
   },

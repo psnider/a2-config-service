@@ -1,0 +1,10 @@
+{
+  "name": "server",
+  "description": "server package for sign-in-service",
+  "author": {
+    "name": "Peter Snider",
+    "email": "snider.peter@gmail.com"
+  },
+  "main": "./server-package.js",
+  "typings": "./server-package-typings.d.ts"
+}

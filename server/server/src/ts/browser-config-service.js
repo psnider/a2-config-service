@@ -1,22 +1,53 @@
 "use strict";
+const fs = require("fs");
 const deepExtend = require("deep-extend");
-const HHTP_STATUS_CODES = require("http-status-codes");
+const CONFIG_SERVICE_JS_FILENAME = 'browser/browser/config/ts/config.service.js';
+const CONFIG_SERVICE_JS_DATA_MARKER = "'SET_BY_SERVER'";
+var config_service_js = {
+    start: undefined,
+    end: undefined
+};
+var DEFAULT_CONFIG;
 var CONFIGURATIONS = {};
-function addConfiguration(name, common, specific) {
+var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS = {};
+function loadConfigService() {
+    let aaa = fs.readFileSync(CONFIG_SERVICE_JS_FILENAME).toString();
+    let parts = aaa.split(CONFIG_SERVICE_JS_DATA_MARKER);
+    config_service_js.start = parts[0];
+    config_service_js.end = parts[1];
+}
+// The first configuration added is assumed to be the default, unless is_default is false.
+// If is_default is true for a subsequent configuration, then that configuration becomes the new default.
+function addConfiguration(name, common, specific, is_default) {
+    if (!DEFAULT_CONFIG || !is_default) {
+        DEFAULT_CONFIG = name;
+    }
     CONFIGURATIONS[name] = deepExtend({}, common, specific);
+    let config_as_code = JSON.stringify(CONFIGURATIONS[name]);
+    CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name] = `${config_service_js.start}${config_as_code}${config_service_js.end}`;
 }
 exports.addConfiguration = addConfiguration;
-// Always return the entire browser config
+// Get the name of the configuration from the current session, or select the default.
+function getConfigurationName(req) {
+    let session = req.session;
+    if (session && session._user && session._user.browser_config_name) {
+        let browser_config_name = session._user.browser_config_name;
+        if (CONFIGURATIONS[browser_config_name]) {
+            return name;
+        }
+    }
+    return DEFAULT_CONFIG;
+}
+// returns a custom
 function handleRestRequest(req, res) {
-    let fname = 'browser-config-service.handleRestRequest';
-    // TODO: look up user's configuration 
-    // for now just use only configuration
-    let keys = Object.keys(CONFIGURATIONS);
-    if (keys.length === 1) {
-        res.send(CONFIGURATIONS[keys[0]]);
-    }
-    else {
-        res.sendStatus(HHTP_STATUS_CODES.INTERNAL_SERVER_ERROR);
-    }
+    let name = getConfigurationName(req);
+    res.send(CONFIGURATIONS[name]);
 }
 exports.handleRestRequest = handleRestRequest;
+// express handler for returning the javascript for "config.service.js""
+function handleConfigServiceJS(req, res) {
+    let name = getConfigurationName(req);
+    res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name]);
+}
+exports.handleConfigServiceJS = handleConfigServiceJS;
+loadConfigService();

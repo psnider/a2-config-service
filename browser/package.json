@@ -1,0 +1,10 @@
+{
+  "name": "browser",
+  "description": "browser package for a2-config-service",
+  "author": {
+    "name": "Peter Snider",
+    "email": "snider.peter@gmail.com"
+  },
+  "main": "./browser-package.js",
+  "typings": "./browser-package-typings.d.ts"
+}

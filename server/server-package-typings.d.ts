@@ -1,1 +1,1 @@
-export {addConfiguration, handleRestRequest} from './config-service.d'
+export {addConfiguration, handleRestRequest, handleConfigServiceJS} from './config-service.d'

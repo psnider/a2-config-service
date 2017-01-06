@@ -5,7 +5,6 @@ import {Http} from '@angular/http'
 export class ConfigurationService {
     constructor(http: Http)
 
-    // Return the ID of the person who is signed-in.
-    getConfiguration(): any
+    getConfiguration(field_key: string): Promise<any>
 }
 
