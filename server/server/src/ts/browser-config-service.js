@@ -38,11 +38,15 @@ function addConfiguration(name, common, specific, is_default) {
     if (!DEFAULT_CONFIG || is_default) {
         DEFAULT_CONFIG = name;
     }
-    CONFIGURATIONS[name] = deepExtend({}, common, specific);
-    let config_as_code = JSON.stringify(CONFIGURATIONS[name]);
-    CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name] = `${config_service_js.start}${config_as_code}${config_service_js.end}`;
+    let config = deepExtend({}, common, specific);
+    CONFIGURATIONS[name] = config;
+    CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name] = getConfigServiceJSForConfig(config);
 }
 exports.addConfiguration = addConfiguration;
+function getConfigServiceJSForConfig(config) {
+    let config_as_code = JSON.stringify(config);
+    return `${config_service_js.start}${config_as_code}${config_service_js.end}`;
+}
 // Get the name of the configuration from the current session, or select the default.
 function getConfigurationName(req) {
     let session = req.session;
@@ -60,10 +64,18 @@ function handleRestRequest(req, res) {
     res.send(CONFIGURATIONS[name]);
 }
 exports.handleRestRequest = handleRestRequest;
-// express handler that returns the javascript for "config.service.js""
-function handleConfigServiceJS(req, res) {
+// express handler that returns the javascript for "config.service.js"
+function handleConfigServiceJS(req, res, user_config) {
     let name = getConfigurationName(req);
-    res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name]);
+    if (user_config) {
+        let static_config = CONFIGURATIONS[name];
+        let config = deepExtend({}, static_config, user_config);
+        let config_service_js = getConfigServiceJSForConfig(config);
+        res.send(config_service_js);
+    }
+    else {
+        res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name]);
+    }
 }
 exports.handleConfigServiceJS = handleConfigServiceJS;
 loadConfigService();

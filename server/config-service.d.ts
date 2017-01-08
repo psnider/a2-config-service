@@ -10,5 +10,6 @@ export function addConfiguration(name: string, common: any, specific: any, is_de
 export function handleRestRequest(req: ExpressRequest, res: ExpressResponse): void
 
 // the express handler that serves the javascript for "config.service.js"
-export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse): void
+// If user_config is specified, it extends the base configuration
+export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse, user_config?: {}): void
 

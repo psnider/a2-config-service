@@ -19,7 +19,6 @@ var DEFAULT_CONFIG: string
 var CONFIGURATIONS: {[config_name: string]: {}} = {}
 var CONFIG_SERVICE_JS_WITH_CONFIGURATIONS: {[config_name: string]: string} = {}
 
-
 function loadConfigService() {
     let filename = CONFIG_SERVICE_JS_FILENAMES.find((filename) => {
         let succeeded
@@ -47,9 +46,15 @@ export function addConfiguration(name: string, common: any, specific: any, is_de
     if (!DEFAULT_CONFIG || is_default) {
         DEFAULT_CONFIG = name
     }
-    CONFIGURATIONS[name] = deepExtend({}, common, specific)
-    let config_as_code = JSON.stringify(CONFIGURATIONS[name])
-    CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name] = `${config_service_js.start}${config_as_code}${config_service_js.end}`
+    let config = deepExtend({}, common, specific)
+    CONFIGURATIONS[name] = config
+    CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name] = getConfigServiceJSForConfig(config)
+}
+
+
+function getConfigServiceJSForConfig(config: any) {
+    let config_as_code = JSON.stringify(config)
+    return `${config_service_js.start}${config_as_code}${config_service_js.end}`
 }
 
 
@@ -73,10 +78,17 @@ export function handleRestRequest(req: ExpressRequest, res: ExpressResponse): vo
 }
 
 
-// express handler that returns the javascript for "config.service.js""
-export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse): void {
+// express handler that returns the javascript for "config.service.js"
+export function handleConfigServiceJS(req: ExpressRequest, res: ExpressResponse, user_config?: {}): void {
     let name = getConfigurationName(req)
-    res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name])
+    if (user_config) {
+        let static_config = CONFIGURATIONS[name]
+        let config = deepExtend({}, static_config, user_config)
+        let config_service_js = getConfigServiceJSForConfig(config)
+        res.send(config_service_js)
+    } else {
+        res.send(CONFIG_SERVICE_JS_WITH_CONFIGURATIONS[name])
+    }
 }
 
 
