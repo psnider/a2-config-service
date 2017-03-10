@@ -1,6 +1,6 @@
 {
   "name": "@sabbatical/a2-config-service",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A configuration service for Angular2 apps",
   "private": false,
   "scripts": {
@@ -28,7 +28,7 @@
     "@angular/http": "2.1.2",
     "@angular/platform-browser": "2.1.2",
     "@angular/platform-browser-dynamic": "2.1.2",
-    "@sabbatical/configure-local": "1.0.3",
+    "@sabbatical/configure-local": "1.0.4",
     "body-parser": "1.15.2",
     "deep-extend": "0.4.1",
     "express": "4.14.0",
